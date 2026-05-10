@@ -1,0 +1,50 @@
+# --- Build output (multi-module Maven) ---
+**/target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.log
+
+# Maven wrapper binaries (committed via properties/scripts; exclude heavy local artifacts)
+**/maven-wrapper.jar
+
+# IDE / toolchain (patterns here apply repo-wide — module .gitignore only covers paths under each module)
+.idea/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.factorypath
+
+### STS / Eclipse ###
+.apt_generated
+.springBeans
+.sts4-cache
+bin/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Gradle (if introduced later) ###
+.gradle/
+**/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### Misc ---
+HELP.md
