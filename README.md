@@ -1,4 +1,4 @@
-# Hotel Booking & Management System
+# Multi-Tenant Property Booking System
 
 ## Table of contents
 
