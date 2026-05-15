@@ -1,18 +1,21 @@
 package com.multi_tenant_booking_system.user_service.config;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import com.multi_tenant_booking_system.user_service.service.JwtService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -30,13 +33,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     String token = authHeader.substring(7);
-    String email = jwtService.extractUsername(token);
-
-    if (email != null) {
+    jwtService.parseAccessToken(token).ifPresent(principal -> {
+      var authority = new SimpleGrantedAuthority("ROLE_" + principal.role().name());
       UsernamePasswordAuthenticationToken authToken =
-          new UsernamePasswordAuthenticationToken(email, null, List.of());
+          new UsernamePasswordAuthenticationToken(principal, null, List.of(authority));
       SecurityContextHolder.getContext().setAuthentication(authToken);
-    }
+    });
     filterChain.doFilter(request, response);
   }
 }

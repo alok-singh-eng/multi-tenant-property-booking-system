@@ -5,6 +5,8 @@ import com.multi_tenant_booking_system.user_service.dto.request.SignupRequest;
 import com.multi_tenant_booking_system.user_service.dto.response.JwtResponse;
 import com.multi_tenant_booking_system.user_service.service.AuthService;
 import com.multi_tenant_booking_system.user_service.utility.ApiPath;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,8 +22,7 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping(ApiPath.SIGN_UP)
-  public ResponseEntity<String> signUp(
-      @RequestBody SignupRequest request) {
+  public ResponseEntity<String> signUp(@Valid @RequestBody SignupRequest request) {
 
     authService.signUp(request);
 
@@ -29,8 +30,7 @@ public class AuthController {
   }
 
   @PostMapping(ApiPath.SIGN_IN)
-  public ResponseEntity<JwtResponse> signIn(
-      @RequestBody LoginRequest request) {
+  public ResponseEntity<JwtResponse> signIn(@Valid @RequestBody LoginRequest request) {
 
     return ResponseEntity.ok(
         authService.signIn(request)

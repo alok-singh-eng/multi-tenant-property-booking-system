@@ -1,10 +1,12 @@
 package com.multi_tenant_booking_system.user_service.service;
 
-import com.multi_tenant_booking_system.user_service.entity.User;
-import org.springframework.stereotype.Service;
+import java.util.Optional;
 
-@Service
+import com.multi_tenant_booking_system.user_service.entity.User;
+import com.multi_tenant_booking_system.user_service.dto.JwtAuthenticationPrincipal;
+
 public interface JwtService {
   String generateToken(User user);
-  String extractUsername(String token);
+
+  Optional<JwtAuthenticationPrincipal> parseAccessToken(String token);
 }

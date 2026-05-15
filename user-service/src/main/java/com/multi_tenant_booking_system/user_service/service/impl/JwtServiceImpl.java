@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.crypto.SecretKey;
 
@@ -12,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.multi_tenant_booking_system.user_service.dto.Role;
 import com.multi_tenant_booking_system.user_service.entity.User;
+import com.multi_tenant_booking_system.user_service.dto.JwtAuthenticationPrincipal;
 import com.multi_tenant_booking_system.user_service.service.JwtService;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -52,17 +55,36 @@ public class JwtServiceImpl implements JwtService {
 	}
 
 	@Override
-	public String extractUsername(String token) {
+	public Optional<JwtAuthenticationPrincipal> parseAccessToken(String token) {
 		try {
-			return Jwts.parser().verifyWith(signingKey).build().parseSignedClaims(token).getPayload().getSubject();
+			var payload = Jwts.parser().verifyWith(signingKey).build().parseSignedClaims(token).getPayload();
+			String email = payload.getSubject();
+			String roleClaim = payload.get("role", String.class);
+			Role role = parseRole(roleClaim);
+			if (email == null || email.isBlank()) {
+				return Optional.empty();
+			}
+			return Optional.of(new JwtAuthenticationPrincipal(email, role));
 		}
 		catch (ExpiredJwtException ex) {
 			log.debug("JWT expired: {}", ex.getMessage());
-			return null;
+			return Optional.empty();
 		}
 		catch (JwtException | IllegalArgumentException ex) {
 			log.debug("Invalid JWT: {}", ex.getMessage());
-			return null;
+			return Optional.empty();
+		}
+	}
+
+	private static Role parseRole(String roleClaim) {
+		if (roleClaim == null || roleClaim.isBlank()) {
+			return Role.USER;
+		}
+		try {
+			return Role.valueOf(roleClaim.trim());
+		}
+		catch (IllegalArgumentException ex) {
+			return Role.USER;
 		}
 	}
 }
